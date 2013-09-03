@@ -1,0 +1,13 @@
+This software package implements the variational Bayes inference algorithm for Gaussian Process Regression Networks described in our ICML 2012 paper (Andrew Wilson, David A. Knowles, Zoubin Ghahramani). Copyright David A. Knowles, 2012. If you use this software please cite the paper. This software may be freely modified and used in a non-commercial setting, so long as this notice is kept. Note that we are not able to offer a commercial license due to the dependency on Infer.NET. If you would be interested in a commercial license please e-mail knowles84@gmail.com. 
+
+This is research software, and is provided with no warranty what-so-ever and minimal support. It has not been tested beyond the experiments described in the paper. 
+
+NOTES
+
+The algorithms included herein were developped using Infer.NET: microsoftresearch.com/infernet. To understand our package it would be beneficial to have at least a basic understanding of how Infer.NET works. Infer.NET is a probabilistic programming language, meaning that one need only specify a probabilistic graphical model and the Infer.NET compiler will generate a "compiled algorithm", a piece of C# code explicitly designed to perform inference in that model. The primary model definition for GPRN can be found in gpnetworkVB/gpnetworkModel.cs in the function NetworkModel. Running this code will cause Infer.NET to generate a compiled algorithm, in for example bin/Debug/GeneratedSource. 
+
+Infer.NET does not currently have built in functionality to learn Gaussian Process hyperparameters, so we provide this as an extension in two ways:
+1) gpnetworkVB/GPFactor.cs provides a way of learning GP hypers in an Infer.NET model (see usage in TestGPFactor.cs), with the limitation that the hypers cannot be shared across multiple GPs. 
+2) By manually editing the compiled algorithm source code, we can add steps to optimise the GP hypers as part of the VB learning algorithm. The files CompiledAlgorithms/*_VMP.cs are all Infer.NET generated source files that have been manually edited to include GP hyperparameter learning, using the functionality provided in gpnetworkVB/KernelOptimiser.cs, which includes a simple but robust gradient descent method. 
+
+We used bindings to LAPACK for the results in the paper, which give a significant performance improvement relative to native C# code since Cholesky decompositions (as with most GP based methods) are the computational bottleneck of the algorithm. Unfortunately the Infer.NET bindings for LAPACK are not publicly available, so we are unable to include this functionality in this release. It would in principle be possible to edit the compiled algorithms to use LAPACK directly, we will consider doing this if there is sufficient demand. 
